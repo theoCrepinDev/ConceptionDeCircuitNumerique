@@ -14,10 +14,10 @@ port(
     CE_SR_IN_L : in STD_LOGIC;
     SR_IN_R : in STD_LOGIC;
     CE_SR_IN_R : in STD_LOGIC;
-    Mem_1_OUT : in STD_LOGIC_VECTOR( 7 downto 0);
-    Mem_2_OUT : in STD_LOGIC_VECTOR( 7 downto 0);
-    Buff_A_OUT : in STD_LOGIC_VECTOR( 3 downto 0);
-	Buff_B_OUT : in STD_LOGIC_VECTOR( 3 downto 0);
+    Mem_1_OUT : OUT STD_LOGIC_VECTOR( 7 downto 0);
+    Mem_2_OUT : OUT STD_LOGIC_VECTOR( 7 downto 0);
+    Buff_A_OUT : OUT STD_LOGIC_VECTOR( 3 downto 0);
+	Buff_B_OUT : OUT STD_LOGIC_VECTOR( 3 downto 0);
  );
  end UALBUFFERS
  

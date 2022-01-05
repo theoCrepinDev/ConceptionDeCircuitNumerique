@@ -80,3 +80,36 @@ MYUALCORE : UALCORE
         SEL_OUT_L => My_SEL_OUT_L,
         	
     );
+
+component INSTRMEMORY
+	Port(
+		clk : in STD_LOGIC;
+		reset : in STD_LOGIC;
+		INSTR_in : in STD_LOGIC_VECTOR(9 downto 0);
+		INSTR_out : out STD_LOGIC_VECTOR(9 downto 0);
+		INSTR_addr : in STD_LOGIC_VECTOR(6 downto 0);
+		INSTR_CE : in STD_LOGIC;
+		RIW0 : in STD_LOGIC;
+	);
+	end component;
+
+	MYINSTRMEMORY : INSTRMEMORY
+	Port(
+		clk => My_clk,
+		reset => My_reset,
+	);
+
+component UALSELOUT
+	Port(
+		SEL_OUT : in STD_LOGIC_VECTOR(1 downto 0);
+        MEM_CACHE_1 : in STD_LOGIC_VECTOR(7 downto 0);
+        MEM_CACHE_2 : in STD_LOGIC_VECTOR(7 downto 0);
+        s : in STD_LOGIC_VECTOR(7 downto 0);
+        RES_OUT : out STD_LOGIC_VECTOR(7 downto 0)
+	);
+	end component;
+
+	MYUALSELOUT : UALSELOUT
+	Port(
+		
+	);
