@@ -1,30 +1,79 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 06.11.2021 19:13:50
+-- Design Name: 
+-- Module Name: INSTRMemory - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity INSTRMEMORY is
-port(
-    clk : in STD_LOGIC;
-    reset : in STD_LOGIC;
-    INSTR_in : in STD_LOGIC_VECTOR(9 downto 0);
-    INSTR_out : out STD_LOGIC_VECTOR(9 downto 0);
-    INSTR_addr : in STD_LOGIC_VECTOR(6 downto 0);
-    INSTR_CE : in STD_LOGIC;
-    RIW0 : in STD_LOGIC
-);
-end INSTRMEMORY;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
 
-architecture INSTRMEMORY_Arch of INSTRMEMORY is
-    begin
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
 
-        INSTR_out <= INSTR_memory(to_integer(unsigned(INSTR_addr))) when falling_edge(clk) and INSTR_CE = '1';
+entity INSTRMemory is
+    Port ( clk : in STD_LOGIC;
+           reset : in STD_LOGIC;
+           INSTR_in : in STD_LOGIC_VECTOR (9 downto 0);
+           INSTR_out : out STD_LOGIC_VECTOR (9 downto 0);
+           INSTR_addr : in STD_LOGIC_VECTOR (6 downto 0);
+           INSTR_CE : in STD_LOGIC;
+           R1W0 : in STD_LOGIC);
+end INSTRMemory;
+
+architecture Behavioral of INSTRMemory is
+
+    Type data_memory IS ARRAY (0 to 127) of std_logic_vector (9 downto 0);
+    SIGNAL INSTR_memory : data_memory;
+    
+begin
+
+--    MyReadWriteProc : process (clk, INSTR_CE, R1W0, reset)
+--    begin
+--        if (reset = '1') then
+--            for i in 0 to 127 loop
+--                --INSTR_memory(i) <= "0000000000";
+--                INSTR_memory(i) <= INSTR_memory(i);
+--            end loop;
+--        elsif falling_edge(clk) and INSTR_CE = '1' then
+--            if (R1W0 = '1') then
+--                INSTR_out <= INSTR_memory(to_integer(unsigned(INSTR_addr)));
+--            else
+--                INSTR_memory(to_integer(unsigned(INSTR_addr))) <= INSTR_in;
+--                INSTR_out <= INSTR_in;
+--            end if;
+--        end if;  
+--    end process;
+
+    INSTR_out <= INSTR_memory(to_integer(unsigned(INSTR_addr))) when falling_edge(clk) and INSTR_CE = '1';
 
     -- Default Value - A mult. B
     INSTR_memory(0) <= "0000000000"; --| no op             | A -> Buf A    | 0     |
     INSTR_memory(1) <= "1111011100"; --| A * B             | B -> Buf B    | 0     |
-    INSTR_memory(2) <= "0000111000"; 
-    INSTR_memory(3) <= "0000000001"; 
+    INSTR_memory(2) <= "0000111000"; --| no op             | S -> Mem 1    | 0     |
+    INSTR_memory(3) <= "0000000001"; --| no op             | A -> Buf A    | Mem 1 |
     INSTR_memory(4) <= "0000000100";
     INSTR_memory(5) <= "0000000101";
     INSTR_memory(6) <= "0000000110";
@@ -58,9 +107,9 @@ architecture INSTRMEMORY_Arch of INSTRMEMORY is
     INSTR_memory(32) <= "0000000000"; --| no op             | A -> Buf A    | 0     |
     INSTR_memory(33) <= "1101011100"; --| A add B           | B -> Buf B    | 0     |
     INSTR_memory(34) <= "0111110000"; --| A xor S           | S -> Buf B    | 0     |
-    INSTR_memory(35) <= "0100110000"; 
-    INSTR_memory(36) <= "0000111000"; 
-    INSTR_memory(37) <= "0000000001"; 
+    INSTR_memory(35) <= "0100110000"; --| not B (xnor)      | S -> Buf B    | 0     |
+    INSTR_memory(36) <= "0000111000"; --| no op             | S -> Mem 1    | 0     |
+    INSTR_memory(37) <= "0000000001"; --| no op             | A -> Buf A    | Mem 1 |
     INSTR_memory(38) <= "0000100110";
     INSTR_memory(39) <= "0000100111";
     INSTR_memory(40) <= "0000101000";
@@ -90,15 +139,15 @@ architecture INSTRMEMORY_Arch of INSTRMEMORY is
         
     -- Default Value - (A0.B1 + A1.B0)
     INSTR_memory(64) <= "0000000000"; --| no op             | A -> Buf A    | 0     | 
-    INSTR_memory(65) <= "1000011100"; --| dec droite A      | B -> Buf B    | 0     |
-    INSTR_memory(66) <= "0101010100"; 
-    INSTR_memory(67) <= "1010111000"; 
-    INSTR_memory(68) <= "0000110000";  
-    INSTR_memory(69) <= "0101000000"; 
-    INSTR_memory(70) <= "0000110000"; 
-    INSTR_memory(71) <= "0110000100"; 
-    INSTR_memory(72) <= "0000111000"; 
-    INSTR_memory(73) <= "0000000001"; 
+    INSTR_memory(65) <= "1000011100"; --| déc droite A      | B -> Buf B    | 0     |
+    INSTR_memory(66) <= "0101010100"; --| A1 and B0         | S -> Buf A    | 0     |
+    INSTR_memory(67) <= "1010111000"; --| déc droite B      | S -> Mem 1    | 0     |
+    INSTR_memory(68) <= "0000110000"; --| no op             | S -> Buf B    | 0     |
+    INSTR_memory(69) <= "0101000000"; --| A0 and B1         | A -> Buf A    | 0     |
+    INSTR_memory(70) <= "0000110000"; --| no op             | S -> Buf B    | 0     |
+    INSTR_memory(71) <= "0110000100"; --| Buf A or Buf B    | Mem1 -> Buf A | 0     |
+    INSTR_memory(72) <= "0000111000"; --| no op             | S -> Mem 1    | 0     |
+    INSTR_memory(73) <= "0000000001"; --| no op             | A -> Buf A    | Mem1  |
     INSTR_memory(74) <= "0001001010";
     INSTR_memory(75) <= "0001001011";
     INSTR_memory(76) <= "0001001100";
@@ -154,4 +203,5 @@ architecture INSTRMEMORY_Arch of INSTRMEMORY is
     INSTR_memory(125) <= "0001111101";
     INSTR_memory(126) <= "0001111110";
     INSTR_memory(127) <= "0001111111";
-end INSTRMEMORY_Arch;
+
+end Behavioral;

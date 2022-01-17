@@ -15,7 +15,7 @@ port (
     CE_Buf_A : out STD_LOGIC;
     CE_Buf_B : out STD_LOGIC;
     CE_Mem_1 : out STD_LOGIC;
-    CE_Mem_2 : out STD_LOGIC;
+    CE_Mem_2 : out STD_LOGIC
     
 );
 end UALSELROUTE;
@@ -85,3 +85,7 @@ begin
                 when "1111"	=> --stockage de  S dans Mem_CAHCE_2
             	CE_Buf_A <=	'0'; CE_Buf_B <= '0' ; CE_Mem_1 <= '0' ; CE_Mem_2 <= '1';
                 Buf_A_In <= (others => '0'); Buf_B_in <= (others => 0); Mem_1_In <= (others => '0'); Mem_2_in <= S;
+            end case;
+        end;
+    end process;
+end UALSELROUTE_Arch; 
