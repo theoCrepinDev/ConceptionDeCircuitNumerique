@@ -27,20 +27,20 @@ end UALSELROUTE;
 architecture UALSELROUTE_Arch of UALSELROUTE is
 	
     signal sMem_1_in, sMem_2_in :STD_LOGIC_VECTOR( 7 downto 0) := (others => '0');
-    signal sBuff_A_in, sBuff_B_in :STD_LOGIC_VECTOR( 3 downto 0) := (others => '0');
-    signal CE_Buf_A, CE_Buf_B, CE_Mem_1, CE_Mem_2 : STD_LOGIC := '0';
+    signal sBuf_A_in, sBuf_B_in :STD_LOGIC_VECTOR( 3 downto 0) := (others => '0');
+    signal sCE_Buf_A, sCE_Buf_B, sCE_Mem_1, sCE_Mem_2 : STD_LOGIC := '0';
 
     
 begin
 	
 	Mem_1_in <= sMem_1_in;
 	Mem_2_in <= sMem_2_in;
-	Buff_A_in <= sBuff_A_in;
-	Buff_B_in <= sBuff_A_in;
+	Buf_A_in <= sBuf_A_in;
+	Buf_B_in <= sBuf_A_in;
     CE_Mem_1 <= sCE_Mem_1;
 	CE_Mem_2 <= sCE_Mem_2;
-	CE_Buff_A <= sCE_Buff_A;
-	CE_Buff_B <= sCE_Buff_A;
+	CE_Buf_A <= sCE_Buf_A;
+	CE_Buf_B <= sCE_Buf_A;
     
 	MySelRouteProc : process (SEL_ROUTE, S, A, B, Buf_A_out, Buf_B_out, Mem_1_out, Mem_2_out)--dès qu'une netrée bouge on regarde ce qui se passe
 	begin
@@ -89,7 +89,7 @@ begin
                 
                 when "1011"	=> --stockage de  MEM_CAHE_2 dans buffer_B(4 bits de poids forts)
             	sCE_Buf_A <=	'0'; sCE_Buf_B <= '1' ; sCE_Mem_1 <= '0' ; sCE_Mem_2 <= '0';
-               ssBuf_A_In <= (others => '0'); sBuf_B_in <= Mem_2_out(7 downto 4); sMem_1_In <= (others => '0'); sMem_2_in <= (others => '0');
+               sBuf_A_In <= (others => '0'); sBuf_B_in <= Mem_2_out(7 downto 4); sMem_1_In <= (others => '0'); sMem_2_in <= (others => '0');
                 
                 when "1100"	=> --stockage de  S dans buffer_B(4 bits de poids faibles)
             	sCE_Buf_A <=	'0'; sCE_Buf_B <= '1' ; sCE_Mem_1 <= '0' ; sCE_Mem_2 <= '0';

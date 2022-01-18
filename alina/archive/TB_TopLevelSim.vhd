@@ -1,3 +1,9 @@
+-- Code your testbench here
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+
 ----------------------------------------------------------------------------------
 -- Company: 
 -- Engineer: 
@@ -18,10 +24,6 @@
 -- 
 ----------------------------------------------------------------------------------
 
-
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -37,7 +39,7 @@ end TopLevelSim;
 
 architecture Behavioral of TopLevelSim is
 
-    component MCU_PRJ_2021_TopLevel 
+    component MCU_PRJ_2021_TopLevel is
     Port (
         CLK100MHZ : in STD_LOGIC;
         sw : in STD_LOGIC_VECTOR(3 downto 0);
@@ -50,21 +52,22 @@ architecture Behavioral of TopLevelSim is
     );
     end component;
 
-    signal CLK100MHZ : STD_LOGIC;
-    signal sw : STD_LOGIC_VECTOR(3 downto 0);
-    signal btn : STD_LOGIC_VECTOR(3 downto 0);
-    signal led : STD_LOGIC_VECTOR(3 downto 0);
-    signal led0_r, led0_g, led0_b : STD_LOGIC;                
-    signal led1_r, led1_g, led1_b : STD_LOGIC;
-    signal led2_r, led2_g, led2_b : STD_LOGIC;                
-    signal led3_r, led3_g, led3_b : STD_LOGIC;
+    signal CLK100MHZ : STD_LOGIC := '0';
+    signal sw : STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal btn : STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal led : STD_LOGIC_VECTOR(3 downto 0) := (others => '0');
+    signal led0_r, led0_g, led0_b : STD_LOGIC := '0';                
+    signal led1_r, led1_g, led1_b : STD_LOGIC := '0';
+    signal led2_r, led2_g, led2_b : STD_LOGIC := '0';                
+    signal led3_r, led3_g, led3_b : STD_LOGIC := '0';
     
-    signal My_S : std_logic_vector (7 downto 0);
-    signal SR_OUT_L, SR_OUT_R, Calc_Done : STD_LOGIC;                
+    signal My_S : std_logic_vector (7 downto 0) := (others => '0');
+    signal SR_OUT_L, SR_OUT_R, Calc_Done : STD_LOGIC := '0';                
     
 begin
 
     MyCUT : MCU_PRJ_2021_TopLevel 
+    
     Port Map (
         CLK100MHZ => CLK100MHZ,
         sw => sw,
@@ -84,6 +87,7 @@ begin
         led3_b => led3_b 
     );
     
+    
     SR_OUT_L <= led2_b;
     SR_OUT_R <= led3_b;
     Calc_Done <= led0_g;
@@ -97,9 +101,9 @@ begin
         WAIT FOR 5 ns;
     end process;
     
-    MyInputProc : process 
+    MyTestProc : process
     begin
-        sw <= "0010";
+    	sw <= "0010";
         btn <= "0001";
         WAIT FOR 7 ns;
         sw <= "1010";
@@ -126,8 +130,8 @@ begin
         sw <= "0010";
         btn <= "0001";
         WAIT FOR 20 ns;
-                
     end process;
+    
 
 
 end Behavioral;
