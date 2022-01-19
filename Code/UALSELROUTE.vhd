@@ -1,8 +1,31 @@
+----------------------------------------------------------------------------------
+-- Company: Efrei Paris promotion 2024
+-- Engineer:    BURETTE Jules
+--              CREPIN Théo
+-- 
+-- Create Date: 07.11.2021 11:19:51
+-- Design Name: MCU_PRJ_2021_TopLevel
+-- Module Name: UALSELROUTE
+-- Project Name: Conception de circuit numérique
+-- Target Devices: Xilinx Artix-35T FPGA 
+-- Tool Versions: 
+-- associe s, A, B et les  sortie memoire et sortie buffers de A et B aux entrées mémoires et buffers en fonction des SEL_ROUTE
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+-- Déclaration de l'entité
 entity UALSELROUTE is 
+-- Déclaration des entrée et sortie de l'entité
 port (
 	SEL_ROUTE : in STD_LOGIC_VECTOR(3 downto 0);
     s : in STD_LOGIC_VECTOR(7 downto 0);
@@ -26,6 +49,7 @@ end UALSELROUTE;
 
 architecture UALSELROUTE_Arch of UALSELROUTE is
 	
+    -- Déclaration des signaux de sortie de l'entité
     signal sMem_1_in, sMem_2_in :STD_LOGIC_VECTOR( 7 downto 0) := (others => '0');
     signal sBuf_A_in, sBuf_B_in :STD_LOGIC_VECTOR( 3 downto 0) := (others => '0');
     signal sCE_Buf_A, sCE_Buf_B, sCE_Mem_1, sCE_Mem_2 : STD_LOGIC := '0';
@@ -33,6 +57,7 @@ architecture UALSELROUTE_Arch of UALSELROUTE is
     
 begin
 	
+    -- Association des signaux de sortie aux ports d'entrée et sortie de l'entité
 	Mem_1_in <= sMem_1_in;
 	Mem_2_in <= sMem_2_in;
 	Buf_A_in <= sBuf_A_in;

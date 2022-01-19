@@ -1,8 +1,31 @@
+----------------------------------------------------------------------------------
+-- Company: Efrei Paris promotion 2024
+-- Engineer:    BURETTE Jules
+--              CREPIN Théo
+-- 
+-- Create Date: 07.11.2021 11:19:51
+-- Design Name: MCU_PRJ_2021_TopLevel
+-- Module Name: UALBUFFERS
+-- Project Name: Conception de circuit numérique
+-- Target Devices: Xilinx Artix-35T FPGA 
+-- Tool Versions: 
+-- Gère la mise en mémoire et le maintient des données des buffers et des mémoires
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
+-- Déclaration de l'entité
 entity UALBUFFERS is 
+-- Déclaration des entrées sorties de l'entité
 port( 
 	clk : in STD_LOGIC;
     reset : in STD_LOGIC;
@@ -28,11 +51,13 @@ port(
  end UALBUFFERS;
  
  architecture UALBUFFERS_Arch of UALBUFFERS is
+    -- Déclarations des signaux de sortie de l'entité
  	signal sBuff_SR_IN_L_out, sBuff_SR_IN_R_out : std_logic := '0';
     signal sMem_1_out, sMem_2_out :STD_LOGIC_VECTOR( 7 downto 0) := (others => '0');
     signal sBuff_A_out, sBuff_B_out :STD_LOGIC_VECTOR( 3 downto 0) := (others => '0');
  
  begin
+    -- Association des signaux aux ports de sorties de l'entité
  	Buff_SR_IN_L_out <= sBuff_SR_IN_L_out;
 	Buff_SR_IN_R_out <= sBuff_SR_IN_R_out;
 	Mem_1_out <= sMem_1_out;
@@ -40,6 +65,9 @@ port(
 	Buff_A_out <= sBuff_A_out;
 	Buff_B_out <= sBuff_A_out;
  	
+    -- L'ensemble de ces process a pour but de mettre les valeurs de entrées buffers et mémoires sur les signaux de sorties
+    -- à chaque front montant de la clock et ce tant que le reset n'est pas demandé.
+
  	BufAProc : process (reset, clk, CE_Buff_A)
     begin
     	if reset = '1' then

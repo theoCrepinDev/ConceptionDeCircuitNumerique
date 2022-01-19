@@ -1,14 +1,18 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: Efrei Paris promotion 2024
+-- Engineer:    BURETTE Jules
+--              CREPIN Théo
 -- 
 -- Create Date: 07.11.2021 11:19:51
--- Design Name: 
+-- Design Name: MCU_PRJ_2021_TopLevel
 -- Module Name: MCU_PRJ_2021_TopLevel - MCU_PRJ_2021_TopLevel_Arch
--- Project Name: 
--- Target Devices: 
+-- Project Name: Conception de circuit numérique
+-- Target Devices: Xilinx Artix-35T FPGA 
 -- Tool Versions: 
--- Description: 
+-- Description: Fichier de design de notre composant 
+--  Permet de regrouper les différents sous composants codés.
+--  ex UALBUFFERS, CMDBUFFERS, ... et de les faire intéragir entre eux en les reliant 
+--  à l'aide de signaux.
 -- 
 -- Dependencies: 
 -- 
@@ -18,23 +22,16 @@
 -- 
 ----------------------------------------------------------------------------------
 
-
+--déclaration des librairies et des modules utilisés.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 use ieee.std_logic_unsigned.all;
 use IEEE.STD_LOGIC_ARITH.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity MCU_PRJ_2021_TopLevel is
+    -- déclaration des port E/S du composant
     Port (
         CLK100MHZ : in STD_LOGIC;
         sw : in STD_LOGIC_VECTOR(3 downto 0);
@@ -47,8 +44,10 @@ entity MCU_PRJ_2021_TopLevel is
     );
 end MCU_PRJ_2021_TopLevel;
 
+-- déclaration de l'architecture du composant, donc des sous composants qui le compose.
 architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
 
+    -- ajout du composant UALCore et déclaration de ses E/S
     component UALCore 
     Port ( A : in STD_LOGIC_VECTOR (3 downto 0);
            B : in STD_LOGIC_VECTOR (3 downto 0);
@@ -60,7 +59,7 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
            SEL_FCT : in STD_LOGIC_VECTOR (3 downto 0));
     end component;
      
-
+    -- ajout du composant CMDBuffers et déclaration de ses E/S
     component CMDBuffers
     Port (  clk : in STD_LOGIC;
            reset : in STD_LOGIC;
@@ -71,6 +70,7 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
      );
     end component;
 
+    -- ajout du composant INSTRMemory et déclaration de ses E/S
     component INSTRMemory 
     Port ( clk : in STD_LOGIC;
            reset : in STD_LOGIC;
@@ -81,7 +81,8 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
            RIW0  : in STD_LOGIC
     );
     end component;
-    
+ 
+    -- ajout du composant UALBuffers et déclaration de ses E/S
     component UALBuffers
     Port ( clk : in STD_LOGIC;
            reset : in STD_LOGIC;
@@ -105,6 +106,7 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
            Buff_SR_IN_R_out : out STD_LOGIC);
     end component;
     
+    -- ajout du composant UALSELOUT et déclaration de ses E/S 
     component UALSELOUT
     Port ( 
         SEL_OUT : in STD_LOGIC_VECTOR (1 downto 0);
@@ -115,6 +117,7 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
     );
     end component;
 
+    -- ajout du composant UALSELROUTE et déclaration de ses E/S
     component UALSELROUTE
     Port ( 
             SEL_ROUTE : in STD_LOGIC_VECTOR (3 downto 0);
@@ -137,11 +140,14 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
     end component;
 
     -- Pour l'automate des 3 fonctions
+    -- déclaration d'un nouveau type de variable/signal t_Function_Main pouvant prendre les valeurs s_Idle, s_Funct_1, s_Funct_2, s_Funct_3.
     type t_Function_Main is (s_Idle, s_Funct_1, s_Funct_2, s_Funct_3);
     
     signal FSM_Main : t_Function_Main := s_Idle;
     signal MyCounter1 : STD_LOGIC_VECTOR (7 downto 0); 
+    -- Explication précise du fonctionnement de MyCounter1 dans le fichier PDF
     
+    -- Déclaration de tous les signaux permettant de relier les E/S des component entre elles
     signal My_A, My_B, My_SEL_FCT, My_Buf_A_in, My_Buf_B_in, My_Buf_A_out, My_Buf_B_out : std_logic_vector(3 downto 0) :=  (others => '0'); 
     
     signal My_SR_IN_R, My_SR_IN_L, My_SR_OUT_R, My_SR_OUT_L, My_CE_Buf_A, My_CE_Buf_B, My_CE_Mem_1, My_CE_Mem_2, My_CE_SR_IN_L, My_CE_SR_IN_R, My_Buf_SR_IN_L_in, My_Buf_SR_IN_R_in, My_Buf_SR_IN_L_out, My_Buf_SR_IN_R_out,My_INSTR_CE, My_R1W0 : std_logic := '0';
@@ -153,6 +159,7 @@ architecture MCU_PRJ_2021_TopLevel_Arch of MCU_PRJ_2021_TopLevel is
     signal My_INSTR_addr : STD_LOGIC_VECTOR (6 downto 0) :=  (others => '0');
 
 begin
+    --Port mapping de tous les component de l'entité, on relie les E/S au signaux correspondants
 
     MyUALCore : UALCore 
     Port Map ( A => My_Buf_A_out,
@@ -179,6 +186,10 @@ begin
               reset => btn(0),
               INSTR_in => (others => '0'),
               INSTR_out => My_INSTR_out,
+              -- on relie le port Instr_addr au signal MyCounter1 ce qui va permettre en fonction de la valeur de MyCounter1 de 
+              -- mettre la bonne valeur dans INSTR_out pour effectuer les bonnes opérations sur les component .
+              -- Voir le tableau dans l'entité INSTRMEMORY, MyCounter1 correspond à un indice de tableau et INSTR_out à la 
+              -- valeur associé à cette indice dans ce tableau.
               INSTR_addr => MyCounter1,
               INSTR_CE => '1',
               RIW0  => '1'
@@ -220,6 +231,7 @@ begin
        Port Map ( 
            SEL_ROUTE => My_INSTR_out(5 downto 2),
            S => My_S,
+           -- ici A et B de l'entité UALSELROUTE prennent la valeur définit par le Switch (sw sur 4 bits) entrée de l'entité.
            A => sw,
            B => sw,
            Buf_A_out => My_Buf_A_out,
@@ -236,7 +248,7 @@ begin
            CE_Mem_2 => My_CE_Mem_2            
        );
 
---Gestion des valeurs par d�faut :
+--Gestion des valeurs par défaut :
     My_Buf_SR_IN_L_in <= '0';
     My_Buf_SR_IN_R_in <= '0';
     My_Res_Out <= (others => '0');
@@ -247,40 +259,74 @@ begin
     led2_r <= My_Res_Out (2); led2_g <= '0'; led2_b <= '0';                 
     led3_r <= My_Res_Out (3); led3_g <= '0'; led3_b <= '0'; 
     
--- Gestion des 3 algorithmes
+-- Gestion des 3 algorithmes, déclartion du process
+-- ce process est executé à chaque variation de CLK100MHZ ou de btn.
 MyAlgoProc : process (btn(3 downto 0), CLK100MHZ)
 begin
+    -- rinitialisation lorsque l'utilisateur a appuyé sur le btn 0.
     if(btn(0) = '1') then
         MyCounter1 <= (others => '0');
         led0_g <= '0';
         FSM_Main <= s_Idle;
+    -- sinon sur chaque front montant de la clock
     elsif rising_edge(CLK100MHZ) then
+        -- on regarde la valeur de FSM_Main qui définit quel calcul à réaliser.
         case FSM_Main is
+
+            -- cas ou on vient de rénitialisé à l'aide du btn 0 et/ou que FSM_Main a la valeur s_Idle.
             when s_Idle =>
+                -- si le btn 3 est préssé, l'utilisateur veut réaliser le calcul 3
+                -- on met donc FSM_Main à la valeur S_Funct_3 et on met MyCounter1 à la valeur 32
                 if(btn(3) = '1') then
-                    MyCounter1 <= "01000000"; FSM_Main <= s_Funct_3; led0_g <= '0';
+                    MyCounter1 <= "01000000";
+                    FSM_Main <= s_Funct_3;
+                    led0_g <= '0';
+
+
+                -- si le btn 2 est préssé, l'utilisateur veut réaliser le calcul 3
+                -- on met donc FSM_Main à la valeur S_Funct_2 et on met MyCounter1 à la valeur 16
                 elsif (btn(2) = '1') then
-                    MyCounter1 <= "00100000"; FSM_Main <= s_Funct_2; led0_g <= '0';
+                    MyCounter1 <= "00100000";
+                    FSM_Main <= s_Funct_2; 
+                    led0_g <= '0';
+
+                -- si le btn 1 est préssé, l'utilisateur veut réaliser le calcul 3
+                -- on met donc FSM_Main à la valeur S_Funct_1 et on met MyCounter1 à la valeur 0
                 elsif (btn(1) = '1') then
-                    MyCounter1 <= (others => '0'); FSM_Main <= s_Funct_1; led0_g <= '0';
+                    MyCounter1 <= (others => '0'); 
+                    FSM_Main <= s_Funct_1; 
+                    led0_g <= '0';
+
+                -- sinon aucun calcul n'est demandé on reste dans cette état avec FSM_Main qui prend s_Idle.
                 else
                     MyCounter1 <= (others => '0'); FSM_Main <= s_Idle; led0_g <= '0';
                 end if; 
+
+
+            -- cas ou on effectue le calcul 1
             when s_Funct_1 =>
+                --Tant que le bouton 1 est préssé on effectue le calcul.
                 if(btn(1) = '1') then
                     FSM_Main <= s_Funct_1;
+                    -- Si le MyCounter1 a la valeur 3, on a éffectué tous les calculs nécessaire pour avoir
+                    -- le résultat sur RES_OUT.
                     if MyCounter1 = 3 then
                         MyCounter1 <= MyCounter1;
                         led0_g <= '1'; 
+
+                    -- Sinon on incrémente MyCounter1 pour effectuer l'étape de calcul suivante
                     else
                         MyCounter1 <= MyCounter1 + 1;
                         led0_g <= '0';
                     end if;
+
+                -- Si le bouton 1 n'est plus préssé, on revient à l'état "d'attente" où FSM_Main prend s_Idle.
                 else
                     MyCounter1 <= (others => '0'); led0_g <= '0';
                     FSM_Main <= s_Idle; 
                 end if;    
-                            
+            
+            -- même idée pour le calcul 2
             when s_Funct_2 =>
                 if(btn(2) = '1') then
                     FSM_Main <= s_Funct_2;
@@ -295,6 +341,8 @@ begin
                     MyCounter1 <= (others => '0'); led0_g <= '0';
                     FSM_Main <= s_Idle; 
                 end if;
+
+            -- même calcul pour le calcul 3
             when s_Funct_3 =>
                 if(btn(3) = '1') then
                     FSM_Main <= s_Funct_3;

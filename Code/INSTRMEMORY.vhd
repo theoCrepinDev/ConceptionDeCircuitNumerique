@@ -1,29 +1,60 @@
+----------------------------------------------------------------------------------
+-- Company: Efrei Paris promotion 2024
+-- Engineer:    BURETTE Jules
+--              CREPIN Théo
+-- 
+-- Create Date: 07.11.2021 11:19:51
+-- Design Name: MCU_PRJ_2021_TopLevel
+-- Module Name: INSTRMEMORY
+-- Project Name: Conception de circuit numérique
+-- Target Devices: Xilinx Artix-35T FPGA 
+-- Tool Versions: 
+-- Permet d'associé une adresse d'instruction composé de SEL_FCT, SLE_OUT et SEL_ROUTE
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
+-- Déclaration de l'entité
 entity INSTRMEMORY is
+-- Déclaration des ports E/S de l'entité
 port(
     clk : in STD_LOGIC;
     reset : in STD_LOGIC;
     INSTR_in : in STD_LOGIC_VECTOR(9 downto 0);
     INSTR_out : out STD_LOGIC_VECTOR(9 downto 0);
-    INSTR_addr : in STD_LOGIC_VECTOR(6 downto 0);
+    INSTR_addr : in STD_LOGIC_VECTOR(7 downto 0);
     INSTR_CE : in STD_LOGIC;
     RIW0 : in STD_LOGIC
 );
 end INSTRMEMORY;
 
 architecture INSTRMEMORY_Arch of INSTRMEMORY is
+    -- Déclaration d'un nouveau type pour le signal INST_memory qui est un tableau composé de 128 bus de 10 bits
 	Type data_memory IS ARRAY (0 to 127) of std_logic_vector (9 downto 0);
     SIGNAL INSTR_memory : data_memory := (others => (others => '0'));
+
+    --Déclaration du signal de la sortie
     signal sINSTR_OUT : STD_LOGIC_VECTOR(9 downto 0) := (others => '0');
     
     begin
+    -- Association du signal de la sortie au port de sortie
     INSTR_out <= sINSTR_out;
+
+    -- Lorsque l'on est sur un front de clock descendant et que l'instruction doit être activé
+    --On associe au signal de sortie la valeur correspondante au tableau INSTR_memory
+    -- à l'indice correspondant à INSTR_addr
 	sINSTR_out <= INSTR_memory(to_integer(unsigned(INSTR_addr))) when falling_edge(clk) and INSTR_CE = '1';
 
-    -- Default Value - A mult. B
+    -- Valeur par defaut, A mult B
     INSTR_memory(0) <= "0000000000"; --| no op             | A -> Buf A    | 0     |
     INSTR_memory(1) <= "1111011100"; --| A * B             | B -> Buf B    | 0     |
     INSTR_memory(2) <= "0000111000"; 
@@ -57,13 +88,13 @@ architecture INSTRMEMORY_Arch of INSTRMEMORY is
     INSTR_memory(30) <= "0000011110";
     INSTR_memory(31) <= "0000011111";
     
-    -- Default Value - (A add. B) xnor A
+    -- Valeur par défaut - (A add. B) xnor A
     INSTR_memory(32) <= "0000000000"; --| no op             | A -> Buf A    | 0     |
     INSTR_memory(33) <= "1101011100"; --| A add B           | B -> Buf B    | 0     |
     INSTR_memory(34) <= "0111110000"; --| A xor S           | S -> Buf B    | 0     |
-    INSTR_memory(35) <= "0100110000"; 
-    INSTR_memory(36) <= "0000111000"; 
-    INSTR_memory(37) <= "0000000001"; 
+    INSTR_memory(35) <= "0100110000"; --| not B (xnor)      | S -> Buf B    | 0     |
+    INSTR_memory(36) <= "0000111000"; --| no op             | S -> Mem 1    | 0     |
+    INSTR_memory(37) <= "0000000001"; --| no op             | A -> Buf A    | Mem 1 |
     INSTR_memory(38) <= "0000100110";
     INSTR_memory(39) <= "0000100111";
     INSTR_memory(40) <= "0000101000";
@@ -91,17 +122,17 @@ architecture INSTRMEMORY_Arch of INSTRMEMORY is
     INSTR_memory(62) <= "0000111110";
     INSTR_memory(63) <= "0000111111";
         
-    -- Default Value - (A0.B1 + A1.B0)
+    -- Valeur par défaut - (A0.B1 + A1.B0)
     INSTR_memory(64) <= "0000000000"; --| no op             | A -> Buf A    | 0     | 
-    INSTR_memory(65) <= "1000011100"; --| dec droite A      | B -> Buf B    | 0     |
-    INSTR_memory(66) <= "0101010100"; 
-    INSTR_memory(67) <= "1010111000"; 
-    INSTR_memory(68) <= "0000110000";  
-    INSTR_memory(69) <= "0101000000"; 
-    INSTR_memory(70) <= "0000110000"; 
-    INSTR_memory(71) <= "0110000100"; 
-    INSTR_memory(72) <= "0000111000"; 
-    INSTR_memory(73) <= "0000000001"; 
+    INSTR_memory(65) <= "1000011100"; --| déc droite A      | B -> Buf B    | 0     |
+    INSTR_memory(66) <= "0101010100"; --| A1 and B0         | S -> Buf A    | 0     |
+    INSTR_memory(67) <= "1010111000"; --| déc droite B      | S -> Mem 1    | 0     |
+    INSTR_memory(68) <= "0000110000"; --| no op             | S -> Buf B    | 0     |
+    INSTR_memory(69) <= "0101000000"; --| A0 and B1         | A -> Buf A    | 0     |
+    INSTR_memory(70) <= "0000110000"; --| no op             | S -> Buf B    | 0     |
+    INSTR_memory(71) <= "0110000100"; --| Buf A or Buf B    | Mem1 -> Buf A | 0     |
+    INSTR_memory(72) <= "0000111000"; --| no op             | S -> Mem 1    | 0     |
+    INSTR_memory(73) <= "0000000001"; --| no op             | A -> Buf A    | Mem1  |
     INSTR_memory(74) <= "0001001010";
     INSTR_memory(75) <= "0001001011";
     INSTR_memory(76) <= "0001001100";
