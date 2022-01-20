@@ -1,0 +1,35 @@
+Projet de conception de circuits numériques
+Réalisé par:	BURETTE Jules et CREPIN Théo Efrei Paris L3-New promotion 2024
+		Semestre5 GR.A
+
+Encadré par:	MARECHAL Catherine
+
+Vous trouverez l'ensemble des fihciers code vhdl dans le sous dossier Code 
+
+
+Résumé de chacune des entités VHDL.
+Chacun des code est commenté de manière à expliquer son fonctionnement au cours de la lecture.
+Dans ce fichier nous nous limiterons à une explication très succinte en une ou deux phrases de chaque entités.
+
+CMDBUFFERS:
+Gère la valeur de SEL_OUT et SEL_FCT pour la gestion des Buffers et Mémoires
+
+INSTRMEMORY
+Permet d'associé une adresse d'instruction composé de SEL_FCT, SLE_OUT et SEL_ROUTE.
+A l'aide d'un tableau qui contient 128 adresses sur 10 bits.
+On peut accéder à chaque adresse à l'aide de son indice dans le tableau.
+C'est le but du signal MyCounter1 dans le design qui permet lors de la demande de calcul de la fonction 1 2 ou 3 de prendre succéssivement
+des valeurs entières correspondantes aux indice de l'addresse d'éxecution correspondante. Et donc cela fait changer les valeurs de SEL_FCT, SEL_OUT, SEL_ROUTE
+Menant à déclencher des processus dans les autres entités.
+
+ualbuffers
+Gère la mise en mémoire et le maintient des données des buffers et des mémoires
+
+ualcore
+associe les valeurs de A, B et des SR_IN L et R aux  singaux S et SR_OUT L et R en fonction de la valeur de SEL_FCT
+
+ualselout
+associe les valeurs des mémoires cache 1 et 2 et S sur RES_OUT en fonction de la valeur de SEL_OUT
+
+ualselroute
+associe s, A, B et les  sortie memoire et sortie buffers de A et B aux entrées mémoires et buffers en fonction des SEL_ROUTE
